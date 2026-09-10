@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Campus Lost & Found{% endblock %}
+
+{% block content %}
+<main class="page">
+<div class="container">
+    <div class="hero-row">
+        <div>
+            <h1 class="page-title">Hello, {{ user['name'] }} 👋</h1>
+            <p class="page-subtitle">
+                Manage your lost and found reports and track claims.
+            </p>
+        </div>
+        <div class="actions">
+            <a class="btn btn-primary"
+               href="{{ url_for('report_item', item_type='lost') }}">
+                Report Lost
+            </a>
+            <a class="btn btn-purple"
+               href="{{ url_for('report_item', item_type='found') }}">
+                Report Found
+            </a>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <div class="card stat">
+            <div class="value">{{ items|length }}</div>
+            <div class="label">My Reports</div>
+        </div>
+        <div class="card stat">
+            <div class="value">
+                {{ items|selectattr('item_type','equalto','lost')|list|length }}
+            </div>
+            <div class="label">Lost Reports</div>
+        </div>
+        <div class="card stat">
+            <div class="value">
+                {{ items|selectattr('item_type','equalto','found')|list|length }}
+            </div>
+            <div class="label">Found Reports</div>
+        </div>
+        <div class="card stat">
+            <div class="value">{{ claims|length }}</div>
+            <div class="label">My Claims</div>
+        </div>
+    </div>
+
+    <div class="quick-grid">
+        <div class="card quick">
+            <h3>🔴 Lost Item</h3>
+            <p>Report something you lost on campus.</p>
+            <a class="btn btn-primary"
+               href="{{ url_for('report_item', item_type='lost') }}">
+                Report Lost Item
+            </a>
+        </div>
+
+        <div class="card quick">
+            <h3>🟢 Found Item</h3>
+            <p>Report an item you found so the owner can locate it.</p>
+            <a class="btn btn-purple"
+               href="{{ url_for('report_item', item_type='found') }}">
+                Report Found Item
+            </a>
+        </div>
+
+        <div class="card quick">
+            <h3>🤖 AI Matching</h3>
+            <p>View possible matches generated from your reports.</p>
+            <span class="btn btn-secondary">Available from reports</span>
+        </div>
+    </div>
+
+    <section class="card section-card">
+        <h2>My Reports</h2>
+
+        {% if items %}
+        <div class="item-grid">
+            {% for item in items %}
+            <article class="item-card">
+                {% if item['photo_path'] %}
+                    <img src="{{ url_for('static', filename=item['photo_path']) }}"
+                         alt="{{ item['name'] }}">
+                {% else %}
+                    <div style="height:160px;display:grid;place-items:center;background:#eef1f8;font-size:48px;">
+                        📦
+                    </div>
+                {% endif %}
+
+                <div class="item-body">
+                    <span class="badge {% if item['item_type']=='lost' %}badge-lost{% else %}badge-found{% endif %}">
+                        {{ item['item_type']|capitalize }}
+                    </span>
+
+                    <h3>{{ item['name'] }}</h3>
+
+                    <div class="meta">
+                        Category: {{ item['category'] or 'Not specified' }}<br>
+                        Location: {{ item['location'] or 'Not specified' }}<br>
+                        Status:
+                        <span class="badge badge-{{ item['status'] }}">
+                            {{ item['status']|capitalize }}
+                        </span>
+                    </div>
+
+                    <div class="actions" style="margin-top:14px;">
+                        <a class="btn btn-primary"
+                           href="{{ url_for('view_matches', item_id=item['id']) }}">
+                            🤖 View AI Matches
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="empty">You have not submitted any reports yet.</div>
+        {% endif %}
+    </section>
+
+    <section class="card section-card">
+        <h2>My Claims</h2>
+
+        {% if claims %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lost Item</th>
+                        <th>Found Item</th>
+                        <th>AI Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for claim in claims %}
+                    <tr>
+                        <td>{{ claim['lost_name'] or '—' }}</td>
+                        <td>{{ claim['found_name'] or '—' }}</td>
+                        <td>{{ claim['match_score'] or 0 }}%</td>
+                        <td>
+                            <span class="badge badge-{{ claim['status'] }}">
+                                {{ claim['status']|capitalize }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="empty">No claims submitted yet.</div>
+        {% endif %}
+    </section>
+</div>
+</main>
+{% endblock %}

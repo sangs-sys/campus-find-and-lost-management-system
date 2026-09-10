@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Report {{ item_type|capitalize }} Item{% endblock %}
+
+{% block content %}
+<main class="page">
+<div class="container">
+    <div style="text-align:center;margin-bottom:24px;">
+        <h1 class="page-title">Report {{ item_type|capitalize }} Item</h1>
+        <p class="page-subtitle">
+            Provide enough details so the AI matching system can find possible matches.
+        </p>
+    </div>
+
+    <section class="card form-card">
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name">Item Name *</label>
+                    <input id="name" name="name" class="form-control"
+                           placeholder="Example: Black Wallet" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">Select category</option>
+                        <option>Electronics</option>
+                        <option>Books</option>
+                        <option>Documents</option>
+                        <option>Wallet / Money</option>
+                        <option>Keys</option>
+                        <option>Jewellery</option>
+                        <option>Clothing</option>
+                        <option>Bag</option>
+                        <option>Accessories</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="colour_brand">Colour / Brand</label>
+                    <input id="colour_brand" name="colour_brand"
+                           class="form-control"
+                           placeholder="Example: Black, HP">
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input id="location" name="location"
+                           class="form-control"
+                           placeholder="Example: Library Block">
+                </div>
+
+                <div class="form-group">
+                    <label for="item_datetime">Date &amp; Time</label>
+                    <input id="item_datetime" name="item_datetime"
+                           type="datetime-local" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="photo">Item Photo</label>
+                    <input id="photo" name="photo" type="file"
+                           class="form-control"
+                           accept=".jpg,.jpeg,.png,.gif,.webp">
+                    <div class="hint">A clear photo improves AI matching.</div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Additional Details</label>
+                    <textarea id="description" name="description"
+                              placeholder="Describe unique marks, stickers, scratches, contents, etc."></textarea>
+                </div>
+            </div>
+
+            <div class="actions" style="margin-top:8px;">
+                <button class="btn btn-primary" type="submit">
+                    Submit Report &amp; Check AI Matches
+                </button>
+                {% if admin %}
+                    <a class="btn btn-secondary"
+                       href="{{ url_for('admin_dashboard') }}">Cancel</a>
+                {% else %}
+                    <a class="btn btn-secondary"
+                       href="{{ url_for('dashboard') }}">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+</div>
+</main>
+{% endblock %}

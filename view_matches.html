@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}AI Matches{% endblock %}
+
+{% block content %}
+<main class="page">
+<div class="container">
+    <div class="hero-row">
+        <div>
+            <h1 class="page-title">🤖 AI Matching</h1>
+            <p class="page-subtitle">
+                Possible matches for <strong>{{ item['name'] }}</strong>.
+                AI suggestions do not automatically approve ownership.
+            </p>
+        </div>
+        <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">
+            ← Dashboard
+        </a>
+    </div>
+
+    {% if matches %}
+    <div class="matches-grid">
+        {% for match in matches %}
+        <article class="card match-card">
+            {% if match['item']['photo_path'] %}
+                <img class="match-photo"
+                     src="{{ url_for('static', filename=match['item']['photo_path']) }}"
+                     alt="{{ match['item']['name'] }}">
+            {% else %}
+                <div class="match-photo" style="display:grid;place-items:center;font-size:55px;">📦</div>
+            {% endif %}
+
+            <div style="margin-top:18px;">
+                <span class="badge {% if match['item']['item_type']=='lost' %}badge-lost{% else %}badge-found{% endif %}">
+                    {{ match['item']['item_type']|capitalize }}
+                </span>
+
+                <h2 style="color:var(--navy);margin:10px 0 5px;">
+                    {{ match['item']['name'] }}
+                </h2>
+
+                <div class="meta">
+                    Category: {{ match['item']['category'] or '—' }}<br>
+                    Location: {{ match['item']['location'] or '—' }}<br>
+                    Details: {{ match['item']['description'] or '—' }}
+                </div>
+
+                <div style="margin-top:17px;">
+                    <div style="display:flex;justify-content:space-between;">
+                        <strong>Overall Match</strong>
+                        <strong>{{ match['scores']['overall'] }}%</strong>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill"
+                             style="width:{{ match['scores']['overall'] }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="score-list">
+                    <span>📷 Photo: {{ match['scores']['photo'] }}%</span>
+                    <span>📝 Description: {{ match['scores']['description'] }}%</span>
+                    <span>📍 Location: {{ match['scores']['location'] }}%</span>
+                    <span>🏷️ Category: {{ match['scores']['category'] }}%</span>
+                </div>
+
+                <div class="actions" style="margin-top:18px;">
+                    <a class="btn btn-primary"
+                       href="{{ url_for('claim_item', item_id=item['id'], matched_item_id=match['item']['id']) }}">
+                        Claim This Match
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="card empty">
+            No plausible AI matches were found yet.
+            Try adding more item details or check again later.
+        </div>
+    {% endif %}
+</div>
+</main>
+{% endblock %}

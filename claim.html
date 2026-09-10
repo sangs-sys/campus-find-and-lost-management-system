@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Claim Match{% endblock %}
+
+{% block content %}
+<main class="page">
+<div class="container">
+    <div style="text-align:center;margin-bottom:24px;">
+        <h1 class="page-title">Claim This Match</h1>
+        <p class="page-subtitle">
+            Submit ownership proof for admin verification.
+        </p>
+    </div>
+
+    <section class="card form-card">
+        <div class="proof-grid" style="margin-bottom:24px;">
+            <div class="card proof-card">
+                <h3 style="color:var(--navy);">Your Report</h3>
+                <strong>{{ my_item['name'] }}</strong>
+                <div class="meta">
+                    {{ my_item['item_type']|capitalize }} ·
+                    {{ my_item['location'] or 'Location not specified' }}
+                </div>
+            </div>
+
+            <div class="card proof-card">
+                <h3 style="color:var(--navy);">Matched Report</h3>
+                <strong>{{ other_item['name'] }}</strong>
+                <div class="meta">
+                    {{ other_item['item_type']|capitalize }} ·
+                    {{ other_item['location'] or 'Location not specified' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="padding:18px;margin-bottom:22px;background:#f8f6ff;">
+            <strong>AI Match Score: {{ scores['overall'] }}%</strong>
+            <div class="score-bar">
+                <div class="score-fill" style="width:{{ scores['overall'] }}%;"></div>
+            </div>
+            <div class="meta">
+                Photo {{ scores['photo'] }}% ·
+                Description {{ scores['description'] }}% ·
+                Location {{ scores['location'] }}% ·
+                Category {{ scores['category'] }}%
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="claim_photo">Ownership Proof Photo *</label>
+                <input id="claim_photo" name="claim_photo"
+                       type="file" class="form-control"
+                       accept=".jpg,.jpeg,.png,.gif,.webp" required>
+                <div class="hint">
+                    Upload a photo that helps prove the item belongs to you.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bill">Purchase Bill / Invoice (Optional)</label>
+                <input id="bill" name="bill"
+                       type="file" class="form-control"
+                       accept=".jpg,.jpeg,.png,.gif,.webp,.pdf">
+            </div>
+
+            <div class="form-group">
+                <label for="additional_details">Additional Details</label>
+                <textarea id="additional_details" name="additional_details"
+                          placeholder="Enter serial number, unique marks, purchase details, etc."></textarea>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">
+                    Submit Claim
+                </button>
+                <a class="btn btn-secondary"
+                   href="{{ url_for('view_matches', item_id=my_item['id']) }}">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </section>
+</div>
+</main>
+{% endblock %}

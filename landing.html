@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set hide_header = true %}
+{% set hide_footer = true %}
+{% block title %}Campus Lost & Found System{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('login') }}" class="landing-fullscreen" aria-label="Enter Campus Lost & Found">
+    <img
+        src="{{ url_for('static', filename='landing_background.jpg') }}"
+        alt="Campus Lost & Found System"
+        class="landing-background-image"
+    >
+</a>
+{% endblock %}

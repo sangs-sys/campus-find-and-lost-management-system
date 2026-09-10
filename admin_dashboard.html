@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<main class="page">
+<div class="container">
+    <div class="hero-row">
+        <div>
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle">
+                Monitor campus reports, AI matches and ownership claims.
+            </p>
+        </div>
+        <div class="actions">
+            <a class="btn btn-primary"
+               href="{{ url_for('admin_report', item_type='lost') }}">
+                Report Lost Item
+            </a>
+            <a class="btn btn-purple"
+               href="{{ url_for('admin_report', item_type='found') }}">
+                Report Found Item
+            </a>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <div class="card stat">
+            <div class="value">{{ stats['total_lost'] }}</div>
+            <div class="label">Total Lost</div>
+        </div>
+        <div class="card stat">
+            <div class="value">{{ stats['total_found'] }}</div>
+            <div class="label">Total Found</div>
+        </div>
+        <div class="card stat">
+            <div class="value">{{ stats['pending_claims'] }}</div>
+            <div class="label">Pending Claims</div>
+        </div>
+        <div class="card stat">
+            <div class="value">{{ stats['returned'] }}</div>
+            <div class="label">Returned</div>
+        </div>
+    </div>
+
+    <div class="quick-grid">
+        <div class="card quick">
+            <h3>🔴 Report Lost</h3>
+            <p>Admin can directly register a lost item.</p>
+            <a class="btn btn-primary"
+               href="{{ url_for('admin_report', item_type='lost') }}">
+                Report Lost Item
+            </a>
+        </div>
+
+        <div class="card quick">
+            <h3>🟢 Report Found</h3>
+            <p>Admin can directly register a found item.</p>
+            <a class="btn btn-purple"
+               href="{{ url_for('admin_report', item_type='found') }}">
+                Report Found Item
+            </a>
+        </div>
+
+        <div class="card quick">
+            <h3>🧾 Review Claims</h3>
+            <p>Verify proof, approve or reject claims and mark returns.</p>
+            <a class="btn btn-secondary"
+               href="{{ url_for('admin_claims') }}">
+                Open Claims
+            </a>
+        </div>
+    </div>
+
+    <section class="card section-card">
+        <h2>Lost Items</h2>
+        {% if lost_items %}
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Reporter</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>AI</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in lost_items %}
+                <tr>
+                    <td>
+                        {% if item['photo_path'] %}
+                            <img class="thumb"
+                                 src="{{ url_for('static', filename=item['photo_path']) }}"
+                                 alt="">
+                        {% endif %}
+                        <strong>{{ item['name'] }}</strong>
+                    </td>
+                    <td>{{ item['owner_name'] }}</td>
+                    <td>{{ item['category'] or '—' }}</td>
+                    <td>{{ item['location'] or '—' }}</td>
+                    <td>
+                        <span class="badge badge-{{ item['status'] }}">
+                            {{ item['status']|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn btn-secondary"
+                           href="{{ url_for('view_matches', item_id=item['id']) }}">
+                            Matches
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+            <div class="empty">No lost items reported.</div>
+        {% endif %}
+    </section>
+
+    <section class="card section-card">
+        <h2>Found Items</h2>
+        {% if found_items %}
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Reporter</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>AI</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in found_items %}
+                <tr>
+                    <td>
+                        {% if item['photo_path'] %}
+                            <img class="thumb"
+                                 src="{{ url_for('static', filename=item['photo_path']) }}"
+                                 alt="">
+                        {% endif %}
+                        <strong>{{ item['name'] }}</strong>
+                    </td>
+                    <td>{{ item['owner_name'] }}</td>
+                    <td>{{ item['category'] or '—' }}</td>
+                    <td>{{ item['location'] or '—' }}</td>
+                    <td>
+                        <span class="badge badge-{{ item['status'] }}">
+                            {{ item['status']|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn btn-secondary"
+                           href="{{ url_for('view_matches', item_id=item['id']) }}">
+                            Matches
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+            <div class="empty">No found items reported.</div>
+        {% endif %}
+    </section>
+</div>
+</main>
+{% endblock %}

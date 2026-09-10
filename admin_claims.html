@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Admin Claims & AI Review{% endblock %}
+
+{% block content %}
+<main class="page">
+<div class="container">
+    <div class="hero-row">
+        <div>
+            <h1 class="page-title">AI Match & Claim Review</h1>
+            <p class="page-subtitle">
+                Review ownership proof before approving a claim.
+            </p>
+        </div>
+        <a class="btn btn-secondary"
+           href="{{ url_for('admin_dashboard') }}">← Admin Dashboard</a>
+    </div>
+
+    {% if claims %}
+        {% for claim in claims %}
+        <section class="card section-card">
+            <div class="hero-row">
+                <div>
+                    <h2 style="margin:0;color:var(--navy);">
+                        Claim #{{ claim['id'] }}
+                    </h2>
+                    <div class="meta">
+                        Claimant: {{ claim['claimant_name'] }}
+                        ({{ claim['claimant_email'] }})
+                    </div>
+                </div>
+
+                <span class="badge badge-{{ claim['status'] }}">
+                    {{ claim['status']|capitalize }}
+                </span>
+            </div>
+
+            <div class="proof-grid">
+                <div class="card proof-card">
+                    <h3 style="color:var(--navy);">Lost Report</h3>
+                    <strong>{{ claim['lost_name'] or '—' }}</strong>
+                    <div class="meta">
+                        Location: {{ claim['lost_location'] or '—' }}
+                    </div>
+                    {% if claim['lost_photo'] %}
+                        <img src="{{ url_for('static', filename=claim['lost_photo']) }}"
+                             alt="Lost item">
+                    {% endif %}
+                </div>
+
+                <div class="card proof-card">
+                    <h3 style="color:var(--navy);">Found Report</h3>
+                    <strong>{{ claim['found_name'] or '—' }}</strong>
+                    <div class="meta">
+                        Location: {{ claim['found_location'] or '—' }}
+                    </div>
+                    {% if claim['found_photo'] %}
+                        <img src="{{ url_for('static', filename=claim['found_photo']) }}"
+                             alt="Found item">
+                    {% endif %}
+                </div>
+
+                <div class="card proof-card">
+                    <h3 style="color:var(--navy);">Ownership Proof</h3>
+                    {% if claim['claim_photo_path'] %}
+                        <img src="{{ url_for('static', filename=claim['claim_photo_path']) }}"
+                             alt="Ownership proof">
+                    {% else %}
+                        <div class="empty">No proof photo.</div>
+                    {% endif %}
+                </div>
+
+                <div class="card proof-card">
+                    <h3 style="color:var(--navy);">Purchase Bill</h3>
+                    {% if claim['bill_path'] %}
+                        {% if claim['bill_path'].lower().endswith('.pdf') %}
+                            <p class="meta">
+                                PDF invoice uploaded.
+                            </p>
+                            <a class="btn btn-secondary"
+                               target="_blank"
+                               href="{{ url_for('static', filename=claim['bill_path']) }}">
+                                Open Invoice
+                            </a>
+                        {% else %}
+                            <img src="{{ url_for('static', filename=claim['bill_path']) }}"
+                                 alt="Purchase bill">
+                        {% endif %}
+                    {% else %}
+                        <div class="empty">Optional bill not provided.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card" style="padding:18px;margin-top:18px;background:#f8f6ff;">
+                <strong>AI Match Score: {{ claim['match_score'] or 0 }}%</strong>
+                <div class="score-bar">
+                    <div class="score-fill"
+                         style="width:{{ claim['match_score'] or 0 }}%;"></div>
+                </div>
+                <div class="meta">
+                    Additional details:
+                    {{ claim['additional_details'] or 'Not provided' }}
+                </div>
+            </div>
+
+            {% if claim['status'] == 'pending' %}
+            <div class="actions" style="margin-top:18px;">
+                <a class="btn btn-success"
+                   href="{{ url_for('admin_claim_action', claim_id=claim['id'], action='approve') }}"
+                   onclick="return confirm('Approve this claim?')">
+                    ✓ Approve Claim
+                </a>
+
+                <a class="btn btn-danger"
+                   href="{{ url_for('admin_claim_action', claim_id=claim['id'], action='reject') }}"
+                   onclick="return confirm('Reject this claim?')">
+                    ✕ Reject Claim
+                </a>
+            </div>
+            {% elif claim['status'] == 'approved' %}
+            <div class="actions" style="margin-top:18px;">
+                <a class="btn btn-primary"
+                   href="{{ url_for('admin_claim_action', claim_id=claim['id'], action='return') }}"
+                   onclick="return confirm('Mark this item as returned?')">
+                    📦 Mark as Returned
+                </a>
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+    {% else %}
+        <div class="card empty">
+            No claims have been submitted yet.
+        </div>
+    {% endif %}
+</div>
+</main>
+{% endblock %}
